@@ -14,7 +14,7 @@ class BaseBatchUploadView(CreateView):
         media_file_name = get_media_file_name(self, self.model)
 
         if not hasattr(self, 'title'):
-            self.title = "Batch %s Upload"%(self.model._meta.model_name.capitalize())
+            self.title = "Batch Upload %s"%(self.model._meta.verbose_name_plural.title())
        
 
         if not hasattr(self, 'detail_fields'):
@@ -22,6 +22,9 @@ class BaseBatchUploadView(CreateView):
         if not hasattr(self, 'default_fields'):
             raise ImproperlyConfigured("Please specify default_fields this view")
 
+        context['app_name'] = self.model._meta.app_label.title()
+        context['model_name'] = self.model._meta.verbose_name.title()
+        context['model_name_plural'] = self.model._meta.verbose_name_plural.title()
         context['title'] = self.title
         context['media_file_name'] = media_file_name
         context['default_fields'] = self.default_fields

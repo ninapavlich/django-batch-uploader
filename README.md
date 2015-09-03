@@ -79,7 +79,17 @@ don't have to go back and update them individually.
 
 #Screenshots
 
+##Bulk upload button in changelist
 ![Changelist View](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/changelist_view.png)        
+
+##Select files and specify individual values
 ![Individual Fields](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/specify_individual_fields.png)        
+
+##Specify defaults to bulk-apply
 ![Defaults Form](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/specify_bulk_defaults.png)        
+
+##Upload in progress
 ![Progress](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/see_progress.png)        
+
+##Upload successful
+![Progress](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/results.png)        

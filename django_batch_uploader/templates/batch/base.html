@@ -1,6 +1,6 @@
 {% extends "admin/base_site.html" %}
 
-{% load i18n l10n static %}
+{% load i18n grp_tags admin_urls admin_static admin_list l10n static %}
 
 
 
@@ -21,8 +21,8 @@
 {% block breadcrumbs %}
     <ul>
         <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{{model_list_url}}">{% trans 'Media' %}</a></li>
-        <li><a href="{{model_app_url}}">{% trans 'Images' %}</a></li>
+        <li><a href="{{model_list_url}}">{{app_name}}</a></li>
+        <li><a href="{{model_app_url}}">{{model_name_plural}}</a></li>
         <li>{{ title }}</li>
     </ul>
 {% endblock %}
@@ -72,12 +72,39 @@
         var $ = grp.jQuery;
         
         $(document).ready(function(){
+            
+
+            function renderResponse(data){
+
+                {% block render_response_js %}
+
+                var media_file_url = data['media_file_url'];
+                var media_file_type = data['media_file_type'];
+                var edit_url = data['edit_url'];
+                
+                var is_image = media_file_type.indexOf('image') >= 0;
+                var content_type_class = media_file_type.split("/").length > 0? 'type-'+media_file_type.split("/")[0] : 'type-unknown';            
+                
+                var url_pieces = media_file_url.split("/");
+                var filename = url_pieces.length > 0? url_pieces[url_pieces.length-1] : src; 
+
+
+                if(is_image){
+                    return '<div class="preview image '+content_type_class+'"><p><a target="_blank" href="'+media_file_url+'">'+filename+'</a></p><img src="'+media_file_url+'" /><p><a target="_blank" href="'+edit_url+'">Edit Item</a></p></div>';
+
+                }else{                
+                    return '<div class="preview file '+content_type_class+'"><p><a target="_blank" href="'+media_file_url+'">'+filename+'</a> - <a target="_blank" href="'+edit_url+'">Edit</a></p></div>';
+                }
+
+                {% endblock %}
+            }
             var options = {
                 'form':'#form-container form',
                 'filename_field':'{{media_file_name}}',
                 'allow_default_fields':{{default_fields|safe}},
-                'allow_detail_fields':{{detail_fields|safe}}
-            };   
+                'allow_detail_fields':{{detail_fields|safe}},
+                'render_response_function':renderResponse
+            };
             $("#batch-upload-container").batchUpload(options);    
         })
         
