@@ -1,0 +1,110 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n l10n static %}
+
+
+
+<!-- MESSAGES -->
+{% block messages %}
+    <ul class="grp-messagelist">
+        <!-- <li class="grp-success">Success Message</li>
+        <li class="grp-error">Error Message</li> -->
+    </ul>
+{% endblock %}
+
+<!-- ADDITIONAL STYLESHEET -->
+{% block stylesheets %}
+    {{ block.super }}
+    <link href="{% static 'batch/css/batchupload.css' %}" rel="stylesheet" type="text/css" media="screen" />
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul>
+        <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{{model_list_url}}">{% trans 'Media' %}</a></li>
+        <li><a href="{{model_app_url}}">{% trans 'Images' %}</a></li>
+        <li>{{ title }}</li>
+    </ul>
+{% endblock %}
+
+
+
+
+<!-- ADDITIONAL JAVASCRIPT -->
+{% block javascripts %}
+    {{ block.super }}
+
+    <script type="text/javascript" charset="utf-8">
+        (function($) {
+            $(document).ready(function() {
+                grappelli.initDateAndTimePicker();
+                $("#grp-content-container .grp-group").grp_collapsible_group();
+                $("#grp-content-container .grp-collapse").grp_collapsible({
+                    on_init: function(elem, options) {
+                        // open collapse (and all collapse parents) in case of errors
+                        if (elem.find("ul.errorlist").length > 0) {
+                            elem.removeClass("grp-closed")
+                                .addClass("grp-open");
+                            elem.parents(".grp-collapse")
+                                .removeClass("grp-closed")
+                                .addClass("grp-open");
+                        }
+                    }
+                });
+                $("a#grp-open-all").bind("click", function(){
+                    $("#grp-content .grp-collapse-handler").each(function() {
+                        $(this).parent(".grp-collapse").removeClass("grp-closed").addClass("grp-open");
+                    });   
+                });
+                $("a#grp-close-all").bind("click", function(){
+                    $("#grp-content .grp-collapse-handler").each(function() {
+                        $(this).parent(".grp-collapse").removeClass("grp-open").addClass("grp-closed");
+                    });
+                });
+                
+            });
+        })(grp.jQuery);
+    </script>
+
+
+    <script src="{% static 'batch/js/jquery.batchupload.js' %}" type="text/javascript"></script>
+    <script type="text/javascript">
+        var $ = grp.jQuery;
+        
+        $(document).ready(function(){
+            var options = {
+                'form':'#form-container form',
+                'filename_field':'{{media_file_name}}',
+                'allow_default_fields':{{default_fields|safe}},
+                'allow_detail_fields':{{detail_fields|safe}}
+            };   
+            $("#batch-upload-container").batchUpload(options);    
+        })
+        
+    </script>
+{% endblock %}
+
+<!-- CONTENT -->
+
+{% block content %}
+    <div>{% block instructions %}{% endblock %}</div>
+
+    <div id="grp-content-container">
+        <div class="grp-row">
+            <div id="form-container">
+                <form id="fileupload" method="post" action="{{model_add_url}}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for fieldset in adminform %}
+                        {% include "admin/includes/fieldset.html" %}
+                    {% endfor %}
+                </form>
+
+
+            </div>
+            <div id="batch-upload-container">
+                BATCH UPLOAD CONTAINER
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
