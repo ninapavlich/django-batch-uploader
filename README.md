@@ -82,4 +82,4 @@ don't have to go back and update them individually.
 ![Changelist View](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/changelist_view.png)        
 ![Individual Fields](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/specify_individual_fields.png)        
 ![Defaults Form](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/specify_bulk_defaults.png)        
-![Progress](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/changelist_view.png)        
+![Progress](https://raw.github.com/ninapavlich/django-batch-uploader/master/docs/screenshots/see_progress.png)        
