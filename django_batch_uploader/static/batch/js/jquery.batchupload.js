@@ -151,7 +151,7 @@
 
             var first_item = this._rendered_uploadable_items[0];
             var file = $(first_item).data("file");
-            var combined_values = this.getCombinedValues(this.getFormValues(this.defaults_container), this.getFormValues(first_item));
+            var combined_values = this.getCombinedValues(first_item, this.getFormValues(this.defaults_container), this.getFormValues(first_item));
 
             this.removeUploadableItem(first_item);
             this.addUploadingItem(file, combined_values);
@@ -283,6 +283,7 @@
             this.done_container = $(this.element).find(".done-container")[0];
             this.start_continer = $(this.element).find(".start-container")[0];
             this.results_container = $(this.element).find(".results-container")[0];
+            this.uploadable_items_container = $(this.element).find(".uploadable-container .items")[0];
 
             this.original_form = $(this.options.form)[0];
             this.form_url = $(this.original_form).attr("action")
@@ -298,6 +299,15 @@
             this.start_uploading_button = $(this.element).find("a.start-uploading")[0];
             this.pause_uploading_button = $(this.element).find("a.pause-uploading")[0];   
             this.clear_queue_button = $(this.element).find("a.clear-queue")[0];
+
+            this.other_browser_label = $(this.element).find("span.others")[0];
+            this.ie_label = $(this.element).find("span.ie")[0];
+
+            if(this.getIEVersion()==0){
+                $(this.ie_label).hide();
+            }else{
+                $(this.other_browser_label).hide();
+            }
 
             this.uploadable_header_container = $(this.uploadable_container).find(".grp-thead .grp-tr")[0];
             this.current_header_container = $(this.current_container).find(".grp-thead .grp-tr")[0];
@@ -325,9 +335,11 @@
             if(this._uploadable_items.length > 0){
                 $(this.defaults_container).show();
                 $(this.clear_queue_button).show();
+                $(this.uploadable_items_container).show();
             }else{
                 $(this.defaults_container).hide();
                 $(this.clear_queue_button).hide();
+                $(this.uploadable_items_container).hide();
             }
 
             if(this._uploadable_items.length > 0 || this._currently_processing_items.length > 0){
@@ -360,14 +372,27 @@
                 $(this.results_container).hide();
             }
 
+            if(this._failed_items.length > 0){
+                $(this.failed_container).show();
+            }else{
+                $(this.failed_container).hide();
+            }
+
+            if(this._done_items.length > 0){
+                $(this.done_container).show();
+            }else{
+                $(this.done_container).hide();
+            }
+
             
         },
         renderContainer: function(){
             return '<div class="batch-container">\
                 <div class="uploadable-container">\
-                    <h2>Step 1. Select Items to Upload</h2>\
+                    <h2>1. Select Items to Upload</h2>\
                     <form action="" method="post" enctype="multipart/form-data" class="trigger">\
-                        <span>Drop Files Here - or - Click to Upload</span>\
+                        <span class="others">Drop Files Here - or - Click to Upload</span>\
+                        <span class="ie">Double-Click to Upload</span>\
                         <input name="files[]" id="files" type="file" multiple="" class="grp-button grp-default"/>\
                         <div class="button-container">\
                             <a href="#" class="grp-button grp-default clear-queue">Clear Upload Queue</a>\
@@ -387,16 +412,16 @@
                         </div>\
                     </div>\
                     <div class="defaults-container">\
-                        <h2>Step 2. Apply Default Upload Values</h2>\
+                        <h2>2. Apply Default Upload Values</h2>\
                         <p class="instructions">Expand this section to set the default values of each field for items uploaded in bulk. If an individual value is specified above, then that individual value will override the defaults below.</p>\
                         <fieldset class="grp-module grp-collapse grp-closed ">\
-                            <h2 class="grp-collapse-handler">Upload Defaults</h2>\
+                            <h3 class="grp-collapse-handler">Upload Defaults (Click to Expand )</h3>\
                             <div class="defaults"></div>\
                         </fieldset>\
                     </div>\
                     <div class="start-container">\
-                        <h2>Step 3. Begin Upload</h2>\
-                        <p class="instructions">Click "Start Uploading" to begin uploading. "Pause Uploading" will allow the current item to finish but not process any more items in the queue. To halt an item while uploading, click the (X) button on the left.</p>\
+                        <!--<h2>3. Begin Upload</h2>\
+                        <p class="instructions">Click "Start Uploading" to begin uploading. "Pause Uploading" will allow the current item to finish but not process any more items in the queue. To halt an item while uploading, click the (X) button on the left.</p>-->\
                         <div class="button-container">\
                             <a href="#" class="grp-button grp-default start-uploading">Start Uploading</a>\
                             <a href="#" class="grp-button grp-default pause-uploading">Pause Uploading</a>\
@@ -419,7 +444,6 @@
                     </div>\
                 </div>\
                 <div class="results-container">\
-                    <h2>Results</h2>\
                     <div class="failed-container">\
                         <div class="items">\
                             <div class="grp-group grp-tabular failed-nested-inline nested-inline " id="failed-group">\
@@ -585,7 +609,7 @@
             var tools_html = '<div class="grp-td tools"><ul class="grp-tools" \
                 style="top:0px !important; float: left;"><li><a href="#" class="grp-delete-handler" \
                 title="Cancel Upload"></a></li></ul><p class="grp-help" \
-                style="padding-left: 30px;width:80px;">WARNING HERE BE DRAGONS: \
+                style="padding-left: 30px;width:80px;">WARNING: \
                 Halting an upload mid-way may have unpredictable effects.</p></div>';
 
             $(html).append(tools_html);      
@@ -804,14 +828,19 @@
             $(html).remove();
 
         },
-        getCombinedValues: function(defaults, form_values){
+        getCombinedValues: function(form_container, defaults, form_values){
             var combined_values = $.extend( {}, defaults, form_values);
+
 
             for (key in defaults) {
                 if(combined_values[key] == '' && defaults[key] != ""){
                     combined_values[key] = defaults[key];
                 }
             }
+            // for (key in combined_values) {
+            //     console.log("COMBINED: "+key+" = "+combined_values[key]);
+            // }
+
             return combined_values;
         },
         getFormValues: function(container){
@@ -821,15 +850,31 @@
 
             //Remove all fields that aren't explicitely defined in allow_defaults
             $(inputs).each(function(index, item) {
+
                 
-                if (output[item.name] !== undefined) {
-                    if (!output[item.name].push) {
-                        output[item.name] = [o[item.name]];
-                    }
-                    output[item.name].push(item.value || '');
-                } else {
-                    output[item.name] = item.value || '';
+                var value =$(item).val();
+                var skip_item = String($(item).attr("type")).toLowerCase() == "checkbox" && item.checked==false;
+
+                
+                if( skip_item ){
+                    
+                    // console.log("skip this un-checked item..."+item.name);
+                    //continue
+
+                }else{
+                    // console.log($(item).attr("type")+" "+item.name+" = "+value+" "+item.checked);
+                
+                    if (output[item.name] !== undefined) {
+                        if (!output[item.name].push) {
+                            output[item.name] = [output[item.name]];
+                        }
+                        output[item.name].push(value || '');
+                    } else {
+                        output[item.name] = value || '';
+                    } 
                 }
+
+                
             });
 
             return output;
@@ -896,6 +941,17 @@
             }
             
             return preview;
+        },
+        getIEVersion: function(){
+            //http://stackoverflow.com/questions/19999388/check-if-user-is-using-ie-with-jquery
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf("MSIE ");
+
+            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer, return version number
+                return parseInt(ua.substring(msie + 5, ua.indexOf(".", msie)));
+            else                 // If another browser, return 0
+                return 0
+
         }
     };
 
@@ -982,8 +1038,7 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
 
     this.failed_status = null;
     this.failed_response = null;
-            
-
+           
 
     //Notify server to return JSON response
     form_data.append("batch", "True");    
@@ -1038,3 +1093,5 @@ UploadableItem.prototype.stop_upload = function(){
     }
 
 }
+
+

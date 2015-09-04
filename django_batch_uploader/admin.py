@@ -98,13 +98,12 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
 
                 mime = MimeTypes()
                 media_file = getattr(obj, media_file_name)
-                media_file_url = urllib.pathname2url(media_file.url)
+                media_file_url = media_file.url #urllib.pathname2url(media_file.url) #Not sure why i had this, but it's escaping the URL
                 
-
                 mime_type = mime.guess_type(media_file_url)
                 edit_url = reverse('admin:%s_%s_change' %(obj._meta.app_label,  obj._meta.model_name),  args=[obj.id] )
 
-                object_data['media_file_url'] = mark_safe(media_file_url)
+                object_data['media_file_url'] = media_file_url
                 object_data['media_file_size'] = media_file.size
                 object_data['media_file_type'] = mime_type[0]
                 object_data['edit_url'] = mark_safe(edit_url)
@@ -131,3 +130,8 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
                 return HttpResponse(json.dumps(data), content_type='application/json')
         except:
           return None
+
+
+
+
+     

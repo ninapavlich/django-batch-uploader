@@ -1,7 +1,9 @@
 from django.contrib.admin import helpers
-
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
+from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView
+
 
 from .utils import get_media_file_name
 
@@ -54,3 +56,9 @@ class BaseBatchUploadView(CreateView):
     def get_readonly_fields(self, request, obj=None):
         #Not implemented
         return [] 
+
+class AdminBatchUploadView(BaseBatchUploadView):
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AdminBatchUploadView, self).dispatch(*args, **kwargs)             

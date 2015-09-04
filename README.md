@@ -3,7 +3,7 @@ Django batch uploading
 
 #Features
 
-1. Batch upload media files
+1. Users can 
 
 2. Allow user to specify default values to apply in bulk. For example, if 
 you're a photographer uploading multiple images from a single shoot, you may
@@ -17,7 +17,7 @@ don't have to go back and update them individually.
 
 1. Django 
 2. django-grappelli
-3. TODO -- specify supported browser version
+3. Chrome, Firefox, Safari, IE10+ (http://caniuse.com/#feat=input-file-multiple)
 
 #Installation
 
@@ -33,9 +33,9 @@ don't have to go back and update them individually.
 
 ##views.py
 
-    from django_batch_uploader.views import BaseBatchUploadView
+    from django_batch_uploader.views import AdminBatchUploadView
 
-    class ImageBatchView(BaseBatchUploadView):      
+    class ImageBatchView(AdminBatchUploadView):      
       
         model = Image
 

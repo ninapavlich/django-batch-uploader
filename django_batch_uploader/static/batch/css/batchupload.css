@@ -18,7 +18,8 @@
 
 h2{
   clear:both;
-  padding:2em 0 0 0;
+  padding:0.5em 0;
+  font-size:16px;
 }
 
 form.trigger{
@@ -80,7 +81,7 @@ form.trigger span{
 }
 .button-container{
   float:right;
-  margin-bottom:1em;
+  margin:1em 0;
 }
 .instructions{
   margin:0.5em 0;
@@ -190,4 +191,29 @@ form.trigger span{
 }
 .progress.error .indicator{
   background:#bf3030;
+}
+
+.items,
+.start-container{
+  width:100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+.defaults-container{
+  margin-top:2em;
+}
+.grp-group{
+  box-sizing: border-box;
+  margin:0 0 5px 0;
+}
+.uploadable-container,
+.current-container,
+.results-container{
+  display: block;
+  padding: 1em;
+  margin:2em 0;
+  background: #f1f1f1;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
