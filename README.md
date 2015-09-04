@@ -3,21 +3,23 @@ Django batch uploading
 
 #Features
 
-1. Users can 
+1. Users can batch upload files / bulk upload files / upload 
+multiple files at one -- however you prefer to phrase it!
 
-2. Allow user to specify default values to apply in bulk. For example, if 
+2. Users can specify default values to apply in bulk. For example, if 
 you're a photographer uploading multiple images from a single shoot, you may
-want to be able to specify that all images to be uploaded are in a single shoot.
+want to be able to tag all the images to a single shoot.
 
-3. Allow user to individually edit specific fields. For example, if you're 
-uploading a set of images, you may want to add titles from the get go so you
-don't have to go back and update them individually.
+3. Users can individually edit specific fields. For example, if 
+you're a photographer uploading multiple images from a single shoot, 
+you may want to add titles when you first upload them so you don't 
+have to go back and update them individually.
 
-#Compatibility
+#Compatibility / Requirements
 
-1. Django 
-2. django-grappelli
-3. Chrome, Firefox, Safari, IE10+ (http://caniuse.com/#feat=input-file-multiple)
+1. Django (last tested with 1.8.2)
+2. django-grappelli (last tested with 2.6.5)
+3. Chrome, Firefox, Safari, IE10+ (Essentially this list: http://caniuse.com/#feat=input-file-multiple)
 
 #Installation
 
@@ -45,21 +47,11 @@ don't have to go back and update them individually.
         #Media file name
         media_file_name = 'image'
 
-        #All possible editable fields
-        fields = ['title','credit', 'caption', 'alt', 'admin_description', 
-            'use_png', 'is_searchable', 'clean_filename_on_upload', 
-            'allow_file_to_override', 'creator', 'tags']
+        #Of the fields above, which fields can be applied in bulk?
+        default_fields = ['credit', 'admin_description', 'creator', 'tags']
 
-
-        #Which fields can be applied in bulk
-        default_fields = ['credit', 'caption', 'admin_description', 'use_png', 
-            'is_searchable', 'clean_filename_on_upload', 'allow_file_to_override', 
-            'creator', 'tags']
-
-        #Which fields can be applied invididually
-        detail_fields = ['title', 'alt', 'credit', 'caption', 'admin_description', 
-            'use_png', 'is_searchable', 'clean_filename_on_upload', 
-            'allow_file_to_override', 'creator', 'tags']
+        #Of the fields above, which fields can be applied individually?
+        detail_fields = ['title', 'alt', 'caption']
     
 
 ##urls.py
