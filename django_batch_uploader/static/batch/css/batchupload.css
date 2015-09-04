@@ -195,8 +195,8 @@ form.trigger span{
 
 .items,
 .start-container{
-  width:100%;
-  overflow: visible;
+  overflow: auto;
+  zoom: 1;
   box-sizing: border-box;
 }
 .defaults-container{
@@ -213,7 +213,8 @@ form.trigger span{
   padding: 1em;
   margin:2em 0;
   background: #f1f1f1;
-  width: 100%;
+  
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto;
+  zoom: 1;
 }
