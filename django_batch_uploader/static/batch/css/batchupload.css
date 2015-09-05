@@ -195,6 +195,7 @@ form.trigger span{
 
 .items,
 .start-container{
+  width:100%;
   overflow: auto;
   zoom: 1;
   box-sizing: border-box;
