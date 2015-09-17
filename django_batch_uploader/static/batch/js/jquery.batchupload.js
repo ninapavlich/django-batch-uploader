@@ -294,7 +294,6 @@
             //Apply default values:
             for (var key in this.options.default_values) {
                 var value = this.options.default_values[key];
-                console.log("set "+key+" = "+value)
                 $(this.defaults_container).find("[name='"+key+"']").val(value);
             }
 

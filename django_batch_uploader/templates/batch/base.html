@@ -90,7 +90,7 @@
 
 
                 if(is_image){   
-                    return '<div class="preview image '+content_type_class+'"><p><a target="_blank" href="'+media_file_url+'">'+filename+'</a></p><img src="'+media_file_url+'" /><p><a target="_blank" href="'+edit_url+'">Edit Item</a></p></div>';
+                    return '<div class="preview image '+content_type_class+'"><p><a target="_blank" href="'+media_file_url+'">'+filename+'</a></p><img src="'+media_file_url+'" style="max-height:75px"/><p><a target="_blank" href="'+edit_url+'">Edit Item</a></p></div>';
 
                 }else{                
                     return '<div class="preview file '+content_type_class+'"><p><a target="_blank" href="'+media_file_url+'">'+filename+'</a> - <a target="_blank" href="'+edit_url+'">Edit</a></p></div>';
