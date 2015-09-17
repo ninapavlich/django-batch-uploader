@@ -46,7 +46,9 @@ have to go back and update them individually.
 
         #Media file name
         media_file_name = 'image'
-
+        
+        fields = ['title', 'credit', 'caption', 'alt', 'admin_description', 'creator', 'tags', ]
+        
         #Of the fields above, which fields can be applied in bulk?
         default_fields = ['credit', 'admin_description', 'creator', 'tags']
 
