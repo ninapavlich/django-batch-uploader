@@ -89,7 +89,7 @@
                 var filename = url_pieces.length > 0? url_pieces[url_pieces.length-1] : src; 
 
 
-                if(is_image){
+                if(is_image){   
                     return '<div class="preview image '+content_type_class+'"><p><a target="_blank" href="'+media_file_url+'">'+filename+'</a></p><img src="'+media_file_url+'" /><p><a target="_blank" href="'+edit_url+'">Edit Item</a></p></div>';
 
                 }else{                
@@ -103,6 +103,7 @@
                 'filename_field':'{{media_file_name}}',
                 'allow_default_fields':{{default_fields|safe}},
                 'allow_detail_fields':{{detail_fields|safe}},
+                'default_values':{{default_values|safe}},
                 'render_response_function':renderResponse
             };
             $("#batch-upload-container").batchUpload(options);    
@@ -114,7 +115,7 @@
 <!-- CONTENT -->
 
 {% block content %}
-    <div>{% block instructions %}{% endblock %}</div>
+    <div>{% block instructions %}{% if instructions %}{{instructions|safe}}{% endif %}{% endblock %}</div>
 
     <div id="grp-content-container">
         <div class="grp-row">

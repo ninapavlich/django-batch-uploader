@@ -1,3 +1,4 @@
+import json 
 from django.contrib.admin import helpers
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
@@ -23,6 +24,11 @@ class BaseBatchUploadView(CreateView):
             raise ImproperlyConfigured("Please specify detail_fields this view")
         if not hasattr(self, 'default_fields'):
             raise ImproperlyConfigured("Please specify default_fields this view")
+        if not hasattr(self, 'default_values'):
+            self.default_values = {}
+
+        if hasattr(self, 'instructions'):
+            context['instructions'] = self.instructions
 
         context['app_name'] = self.model._meta.app_label.title()
         context['model_name'] = self.model._meta.verbose_name.title()
@@ -31,6 +37,9 @@ class BaseBatchUploadView(CreateView):
         context['media_file_name'] = media_file_name
         context['default_fields'] = self.default_fields
         context['detail_fields'] = self.detail_fields
+
+
+        context['default_values'] = json.dumps(self.default_values)
         context['model_list_url'] = reverse('admin:app_list', kwargs={'app_label': self.model._meta.app_label})
         context['model_app_url'] = reverse('admin:%s_%s_changelist'%(self.model._meta.app_label, self.model._meta.model_name))
         context['model_add_url'] = reverse('admin:%s_%s_add'%(self.model._meta.app_label, self.model._meta.model_name))
@@ -42,11 +51,16 @@ class BaseBatchUploadView(CreateView):
             self.get_readonly_fields(self.request, None),
             model_admin=self
         )
+
+
         return context
 
     
             
     def get_fieldsets(self, request, obj=None):
+        if not self.fields:
+            self.fields =  list(set(self.default_fields + self.detail_fields))
+            
         return [(None, {'fields': self.fields})]
 
     def get_prepopulated_fields(self, request, obj=None):

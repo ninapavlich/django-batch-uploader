@@ -46,8 +46,6 @@
         this.render_preview_function = this.options['render_preview_function'] || this.renderPreview;
         this.render_response_function = this.options['render_response_function'] || this.renderResponse;
 
-
-
         this.init();
     }
 
@@ -293,6 +291,13 @@
             var defaults_html = this.renderDefaults();
             $(this.defaults_container).find(".defaults").html(defaults_html);
 
+            //Apply default values:
+            for (var key in this.options.default_values) {
+                var value = this.options.default_values[key];
+                console.log("set "+key+" = "+value)
+                $(this.defaults_container).find("[name='"+key+"']").val(value);
+            }
+
             this.add_items_button = $(this.element).find("a.add-items")[0];
             this.form_trigger = $(this.element).find("form.trigger")[0];
             this.form_file_input_field = $(this.element).find("input#files")[0]; 
@@ -327,6 +332,8 @@
             this.initFailedItems();
 
             this.initGrappelliHooks();
+
+            
             
         },
         render: function() {
@@ -547,6 +554,12 @@
             });
 
             $(this.uploadable_list_container).append(html);
+
+            //Apply default values:
+            for (var key in this.options.default_values) {
+                var value = this.options.default_values[key];
+                $(html).find("[name='"+key+"']").val(value);
+            }
             
             //add listeners
             $(html).find("a.grp-delete-handler").bind("click", function(event){
