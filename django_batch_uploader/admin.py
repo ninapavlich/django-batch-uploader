@@ -86,50 +86,49 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
         media_file_name = get_media_file_name(self, self.model)
 
 
-
-        # try:
-        latest_log_entry = LogEntry.objects.filter(action_flag=ADDITION).order_by('-action_time')[0]
-        ct = ContentType.objects.get_for_id(latest_log_entry.content_type_id)
-        obj = ct.get_object_for_this_type(pk=latest_log_entry.object_id)
-        
-        if obj:
-
-            object_data = {}
-
-            mime = MimeTypes()
-            media_file = get_media_file(self, self.model, obj)
-            media_file_url = media_file.url #urllib.pathname2url(media_file.url) #Not sure why i had this, but it's escaping the URL
+        try:
+            latest_log_entry = LogEntry.objects.filter(action_flag=ADDITION).order_by('-action_time')[0]
+            ct = ContentType.objects.get_for_id(latest_log_entry.content_type_id)
+            obj = ct.get_object_for_this_type(pk=latest_log_entry.object_id)
             
-            mime_type = mime.guess_type(media_file_url)
-            edit_url = reverse('admin:%s_%s_change' %(obj._meta.app_label,  obj._meta.model_name),  args=[obj.id] )
+            if obj:
 
-            object_data['media_file_url'] = media_file_url
-            object_data['media_file_size'] = media_file.size
-            object_data['media_file_type'] = mime_type[0]
-            object_data['edit_url'] = mark_safe(edit_url)
+                object_data = {}
 
-            field_values = {}
+                mime = MimeTypes()
+                media_file = get_media_file(self, self.model, obj)
+                media_file_url = media_file.url #urllib.pathname2url(media_file.url) #Not sure why i had this, but it's escaping the URL
+                
+                mime_type = mime.guess_type(media_file_url)
+                edit_url = reverse('admin:%s_%s_change' %(obj._meta.app_label,  obj._meta.model_name),  args=[obj.id] )
 
+                object_data['media_file_url'] = media_file_url
+                object_data['media_file_size'] = media_file.size
+                object_data['media_file_type'] = mime_type[0]
+                object_data['edit_url'] = mark_safe(edit_url)
 
-            for output_field in output_fields:
-                value = unicode(self.get_field_contents(output_field, obj))
-                label = unicode(label_for_field(output_field, self.model, self))
+                field_values = {}
 
-                field_values[output_field] = {
-                    'label':label,
-                    'value':value
+                for output_field in output_fields:
+                    value = unicode(self.get_field_contents(output_field, obj))
+                    label = unicode(label_for_field(output_field, self.model, self))
+
+                    field_values[output_field] = {
+                        'label':label,
+                        'value':value
+                    }
+
+                
+                data = {
+                    "files":[
+                        object_data
+                    ]
                 }
+                json_dumped = json.dumps(data)
 
-            object_data['field_values'] = field_values
-
-            data = {
-                "files":[
-                    object_data
-                ]
-            }
-            return HttpResponse(json.dumps(data), content_type='application/json')
-        # except:
-        #   return None
+                return HttpResponse(json_dumped, content_type='application/json')
+        except:
+          return None
 
 
 

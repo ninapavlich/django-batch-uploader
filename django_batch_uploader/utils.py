@@ -25,14 +25,14 @@ For example: media_file_name='image' "%(model._meta.model_name))
 
 def get_media_file(cls, model, obj):
 
-    try:
-        media_file_name = get_media_file_name(cls, model)
-            
-        #If explicitely labeled
-        if hasattr(obj, media_file_name):
-            return obj[media_file_name]
-    except:
-        pass
+    # try:
+    media_file_name = get_media_file_name(cls, model)
+        
+    #If explicitely labeled
+    if hasattr(obj, media_file_name):
+        return getattr(obj, media_file_name)
+    # except:
+    #     pass
 
     if hasattr(obj, 'get_media_file'):
         return obj.get_media_file()

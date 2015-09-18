@@ -1,15 +1,33 @@
 import json 
+from django import forms
 from django.contrib.admin import helpers
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
+from django.forms.utils import ErrorDict, ErrorList, flatatt
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView
 
 
 from .utils import get_media_file_name
 
+
+def model_to_modelform(model):
+    meta = type('Meta', (), { "model":model, "fields" : '__all__'})
+    modelform_class = type('modelform', (forms.ModelForm,), {"Meta": meta})
+    return modelform_class
+
+
 class BaseBatchUploadView(CreateView):
     template_name = 'batch/base.html'  
+
+    def get_form(self, form_class=None):
+
+        if self.form_class:
+            form_class = self.get_form_class()            
+        else:
+            form_class = model_to_modelform(self.model)
+        
+        return form_class(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(BaseBatchUploadView, self).get_context_data(**kwargs)

@@ -1065,12 +1065,16 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
         success: function(data) {
             parent.completed_xhr = parent.active_xhr;
             parent.active_xhr = null;
-             
-            parent.response_data = data['files'][0];
+            
+            try{
+                parent.response_data = data['files'][0];    
+                
+            }catch(e){
+                parent.response_data = {}
+            }
 
             var response_markup = parent.response_markup_function(parent.response_data);
             $(parent.response).html(response_markup);
-
             $(parent).trigger(UploadableItem.event_upload_done, [parent, parent.response_data]);
 
 

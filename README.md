@@ -41,9 +41,6 @@ have to go back and update them individually.
       
         model = Image
 
-        #Same form used in admin.py
-        form_class = ImageAddForm
-
         #Media file name
         media_file_name = 'image'
         
