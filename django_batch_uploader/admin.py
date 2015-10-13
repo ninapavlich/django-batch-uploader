@@ -4,7 +4,6 @@ import urllib
 
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry, ADDITION
-from django.contrib.admin.util import flatten_fieldsets
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
