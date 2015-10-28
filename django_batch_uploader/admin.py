@@ -3,17 +3,22 @@ from mimetypes import MimeTypes
 import urllib
 
 from django.contrib import admin
+from django.contrib.admin.exceptions import DisallowedModelAdminToField
 from django.contrib.admin.models import LogEntry, ADDITION
+from django.contrib.admin.options import TO_FIELD_VAR
+from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models.fields.related import ManyToManyRel
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.template.defaultfilters import capfirst, linebreaksbr
 from django.utils import six
 from django.utils.encoding import force_text, smart_text
 from django.utils.html import conditional_escape, format_html
 from django.utils.safestring import mark_safe
+
+
 
 
 from django.contrib.admin.utils import (
@@ -45,11 +50,37 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
         default_response = super(BaseBatchUploadAdmin, self).add_view(request, form_url, extra_context)
 
         if request.method == 'POST' and "batch" in request.POST:
+            
+            self.validate_form(request, form_url, extra_context)
+
             response = self.batch_upload_response(request)
             if response != None:
                 return response
 
         return default_response
+
+    def validate_form(self, request, form_url, extra_context=None):
+        
+        to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
+        if to_field and not self.to_field_allowed(request, to_field):
+            raise DisallowedModelAdminToField("The field %s cannot be referenced." % to_field)
+
+        model = self.model
+        opts = model._meta
+        add = True
+
+        if not self.has_add_permission(request):
+            raise PermissionDenied        
+        obj = None
+
+        ModelForm = self.get_form(request, obj)
+        form = ModelForm(request.POST, request.FILES, instance=obj)
+        valid = form.is_valid()
+        if not form.is_valid():
+            raise ValidationError(form.errors)
+
+        #If we made it to here with no errors, we're valid.
+
 
     def get_field_contents(self, field, obj):
         from django.contrib.admin.templatetags.admin_list import _boolean_icon
@@ -109,8 +140,8 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
                 field_values = {}
 
                 for output_field in output_fields:
-                    value = unicode(self.get_field_contents(output_field, obj))
-                    label = unicode(label_for_field(output_field, self.model, self))
+                    value = str(self.get_field_contents(output_field, obj))
+                    label = str(label_for_field(output_field, self.model, self))
 
                     field_values[output_field] = {
                         'label':label,
@@ -126,10 +157,5 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
                 json_dumped = json.dumps(data)
 
                 return HttpResponse(json_dumped, content_type='application/json')
-        except:
-          return None
-
-
-
-
-     
+        except Exception as e:
+          return HttpResponseServerError(e)

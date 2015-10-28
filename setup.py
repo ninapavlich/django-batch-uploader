@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name = 'django_batch_uploader',
     packages = ['django_batch_uploader'],
-    version = '0.7',
+    version = '0.8',
     description = 'Batch Uploading Mechanism for Django Admin',
     author = 'Nina Pavlich',
     author_email='nina@ninalp.com',
