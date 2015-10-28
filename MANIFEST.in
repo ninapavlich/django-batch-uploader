@@ -1,7 +1,7 @@
 include README.md
 include LICENSE.txt
-include django_batch_uploader/static/batch/css/batchupload.css
-include django_batch_uploader/static/batch/js/jquery.batchupload.js
-include django_batch_uploader/templates/admin/batch_change_list.html
-include django_batch_uploader/templates/batch/base.html
+include django_batch_uploader/static/batch/css/*.css
+include django_batch_uploader/static/batch/js/*.js
+include django_batch_uploader/templates/admin/*.html
+include django_batch_uploader/templates/batch/*.html
 recursive-include django_batch_uploader/ *.py *.css *.js *.html
