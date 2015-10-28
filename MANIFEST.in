@@ -1,3 +1,7 @@
-include README.rst
-recursive-include media/ *
+include README.md
+include LICENSE.txt
+include django_batch_uploader/static/batch/css/batchupload.css
+include django_batch_uploader/static/batch/js/jquery.batchupload.js
+include django_batch_uploader/templates/admin/batch_change_list.html
+include django_batch_uploader/templates/batch/base.html
 recursive-include django_batch_uploader/ *.py *.css *.js *.html
