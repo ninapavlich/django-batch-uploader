@@ -55,15 +55,13 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
             errors = []
             errors = self.validate_form(request, form_url, extra_context)
             if errors is None:
+
+                default_response = super(BaseBatchUploadAdmin, self).add_view(request, form_url, extra_context)
                 response = self.batch_upload_response(request)
                 if response != None:
-
-                    default_response = super(BaseBatchUploadAdmin, self).add_view(request, form_url, extra_context)
-                    response = self.batch_upload_response(request)
-                    if response != None:
-                        return response
-                    else:
-                        return default_response
+                    return response
+                else:
+                    return default_response
 
             data = {
                 "success":False,
