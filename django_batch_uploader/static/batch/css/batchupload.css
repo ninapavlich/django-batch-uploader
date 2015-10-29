@@ -202,6 +202,11 @@ form.trigger span{
 }
 .defaults-container{
   margin-top:2em;
+  margin-bottom:2em;
+
+  /* clearfix */
+  width: 100%;
+  overflow: hidden;
 }
 .grp-group{
   box-sizing: border-box;

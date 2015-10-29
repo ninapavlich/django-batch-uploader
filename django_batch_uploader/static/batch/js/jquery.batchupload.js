@@ -26,6 +26,7 @@
         this._defaults = defaults;
         this._name = pluginName;
 
+        this._has_ever_added_item = false;
         this._uploadable_items = [];
         this._rendered_uploadable_items = [];
 
@@ -180,7 +181,7 @@
         uploadFailed:function(item, file, data, status, error){
 
             this.removeUploadingItem(item);
-            this.addFailedItem(file);
+            this.addFailedItem(file, data);
             this.render();
 
             this.addWarningMessage("The upload process for \
@@ -248,7 +249,7 @@
                 var has_file = this.hasFileInQueue(file);
                 if(has_file==false){
                     var uploadable_file = new UploadableItem(file, this.render_preview_function, this.render_response_function);
-                    this.addUploadableItem(uploadable_file);    
+                    this.addUploadableItem(uploadable_file, null);    
                 }                
             }
             
@@ -337,13 +338,17 @@
         },
         render: function() {
             //Update view
+
+            if(this._has_ever_added_item==true){
+                $(this.defaults_container).show();
+            }else{
+                $(this.defaults_container).hide();
+            }
             
             if(this._uploadable_items.length > 0){
-                $(this.defaults_container).show();
                 $(this.clear_queue_button).show();
                 $(this.uploadable_items_container).show();
             }else{
-                $(this.defaults_container).hide();
                 $(this.clear_queue_button).hide();
                 $(this.uploadable_items_container).hide();
             }
@@ -404,7 +409,16 @@
                             <a href="#" class="grp-button grp-default clear-queue">Clear Upload Queue</a>\
                         </div>\
                     </form>\
+                    <div class="defaults-container">\
+                        <h2>2. Apply Default Upload Values</h2>\
+                        <p class="instructions">Use this section to set the default values of each field for items uploaded in bulk. If an individual value is specified below, then that individual value will override the defaults here.</p>\
+                        <fieldset class="grp-module">\
+                            <h3 class="grp-collapse-handler">Upload Defaults</h3>\
+                            <div class="defaults"></div>\
+                        </fieldset>\
+                    </div>\
                     <div class="items">\
+                        <h2>3. Apply Individual Upload Values</h2>\
                         <div class="grp-group grp-tabular uploadable-nested-inline nested-inline " id="uploadable-group">\
                             <h2 class="grp-collapse-handler">Items To Upload</h2>\
                             <div class="grp-module grp-table">\
@@ -417,16 +431,8 @@
                             </div>\
                         </div>\
                     </div>\
-                    <div class="defaults-container">\
-                        <h2>2. Apply Default Upload Values</h2>\
-                        <p class="instructions">Expand this section to set the default values of each field for items uploaded in bulk. If an individual value is specified above, then that individual value will override the defaults below.</p>\
-                        <fieldset class="grp-module grp-collapse grp-closed ">\
-                            <h3 class="grp-collapse-handler">Upload Defaults (Click to Expand )</h3>\
-                            <div class="defaults"></div>\
-                        </fieldset>\
-                    </div>\
                     <div class="start-container">\
-                        <!--<h2>3. Begin Upload</h2>\
+                        <!--<h2>4. Begin Upload</h2>\
                         <p class="instructions">Click "Start Uploading" to begin uploading. "Pause Uploading" will allow the current item to finish but not process any more items in the queue. To halt an item while uploading, click the (X) button on the left.</p>-->\
                         <div class="button-container">\
                             <a href="#" class="grp-button grp-default start-uploading">Start Uploading</a>\
@@ -518,7 +524,7 @@
                 }                
             });
         },
-        addUploadableItem: function(file){
+        addUploadableItem: function(file, previous_data){
             var parent = this;
 
             //render html
@@ -552,6 +558,7 @@
                 }
             });
 
+            
             $(this.uploadable_list_container).append(html);
 
             //Apply default values:
@@ -559,6 +566,18 @@
                 var value = this.options.default_values[key];
                 $(html).find("[name='"+key+"']").val(value);
             }
+
+            //Apply previous values:
+            if(previous_data!=null){
+                for (var key in previous_data) {
+                    var value = previous_data[key];
+                    $(html).find("[name='"+key+"']").val(value);
+
+                    //check box if its a checkbox
+                    if(value === "on"){ $(html).find("[name='"+key+"']").attr("checked", true);}
+                }   
+            }
+            
             
             //add listeners
             $(html).find("a.grp-delete-handler").bind("click", function(event){
@@ -570,6 +589,7 @@
             //add to _rendered_uploadable_items
             this._uploadable_items.push(file);
             this._rendered_uploadable_items.push(html);
+            this._has_ever_added_item = true;
 
         },
         removeUploadableItem: function(html){
@@ -634,7 +654,7 @@
             for (key in data) {
                 $(values_container).append("<p><strong>"+key+":</strong> "+data[key]+"</p>");
             }
-            $(html).append(values_container);      
+            $(html).append(values_container);
 
             var progress_container = $('<div class="grp-td progress">\
                 <div class="status-message"></div><div class="progress">\
@@ -652,7 +672,7 @@
                 event.preventDefault();
                 
                 file.stop_upload();
-                parent.addUploadableItem(file);    
+                parent.addUploadableItem(file, data);    
                 parent.removeUploadingItem(html);   
                 parent.going = false;  
                 parent.render();           
@@ -768,11 +788,14 @@
             var preview_header_html = '<div class="grp-th preview">Preview</div>';
             $(parent.failed_header_container).append(preview_header_html);
 
+            var values_header_html = '<div class="grp-th values">Values</div>';
+            $(parent.failed_header_container).append(values_header_html);
+
             var values_header_html = '<div class="grp-th error">Error</div>';
             $(parent.failed_header_container).append(values_header_html);
            
         },
-        addFailedItem: function(file){
+        addFailedItem: function(file, data){
             var parent = this;
 
             
@@ -792,6 +815,12 @@
             $(preview_container).append(file.preview);
             $(html).append(preview_container);
 
+            var values_container = $('<div class="grp-td values"></div>');
+            for (key in data) {
+                $(values_container).append("<p><strong>"+key+":</strong> "+data[key]+"</p>");
+            }
+            $(html).append(values_container);
+
             var error_container = $('<div class="grp-td error"><pre>'+file.failed_response+'</pre></div>');
             $(html).append(error_container);      
 
@@ -809,7 +838,7 @@
                 event.preventDefault();
                 
                 parent.removeFailedItem(html); 
-                parent.addUploadableItem(file);  
+                parent.addUploadableItem(file, data);  
                 parent.render();     
             });
 
@@ -917,9 +946,9 @@
 
             if(isImage){
                 if(isData){                
-                    preview = $('<div class="preview image '+contentTypeClass+'"><p>'+filename+'</p><canvas/></div>');
+                    preview = $('<div class="preview image '+contentTypeClass+'"><p>'+filename+'</p><canvas/><p class="grp-help">Don\'t worry if this preview looks a little distorted, it won\'t look like that when the file is uploaded.</p></div>');
                 }else{                
-                    preview = $('<div class="preview image '+contentTypeClass+'"><p>'+filename+'</p><a href="'+src+'"><canvas/></a></div>');
+                    preview = $('<div class="preview image '+contentTypeClass+'"><p>'+filename+'</p><a href="'+src+'"><canvas/></a><p class="grp-help">Don\'t worry if this preview looks a little distorted, it won\'t look like that when the file is uploaded.</p></div>');
                 }
 
                 var canvas = $(preview).find("canvas")[0];
@@ -1064,18 +1093,32 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
         processData: false,
         success: function(data) {
             parent.completed_xhr = parent.active_xhr;
-            parent.active_xhr = null;
-            
-            try{
-                parent.response_data = data['files'][0];    
-                
-            }catch(e){
-                parent.response_data = {}
-            }
+                        
 
-            var response_markup = parent.response_markup_function(parent.response_data);
-            $(parent.response).html(response_markup);
-            $(parent).trigger(UploadableItem.event_upload_done, [parent, parent.response_data]);
+            success = String(data['success']).toLowerCase()=='true';
+
+            if(success){
+                try{
+                    parent.response_data = data['files'][0];   
+                    
+                }catch(e){
+                    parent.response_data = {}
+                }
+
+                var response_markup = parent.response_markup_function(parent.response_data);
+                $(parent.response).html(response_markup);
+                $(parent).trigger(UploadableItem.event_upload_done, [parent, parent.response_data]);
+            }else{
+                var error_status = 400;
+                var error_message = parent.renderErrors(data['errors']);
+
+                parent.failed_status = error_status;
+                parent.failed_response = error_message;
+                $(parent).trigger(UploadableItem.event_upload_failed, [error_status, error_message]);
+            }
+            
+
+            parent.active_xhr = null;
 
 
         },
@@ -1099,6 +1142,13 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
 
     $(this).trigger(UploadableItem.event_upload_started);  
     
+}
+UploadableItem.prototype.renderErrors = function(errors){
+    preview = "";
+    for (key in errors) {
+        preview += "<p><strong>"+key+":</strong> "+errors[key]+"</p>";
+    }
+    return preview;
 }
 UploadableItem.prototype.stop_upload = function(){
     if(this.active_xhr!=null){
