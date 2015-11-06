@@ -158,8 +158,8 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
         return conditional_escape(result_repr)
 
     def batch_upload_response(self, request):
-
         output_fields = flatten_fieldsets(self.fieldsets)
+        
         media_file_name = get_media_file_name(self, self.model)
 
 
@@ -196,7 +196,9 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
                     'value':value
                 }
 
+            object_data['field_values'] = field_values
             
+
             data = {
                 "success":True,
                 "files":[
