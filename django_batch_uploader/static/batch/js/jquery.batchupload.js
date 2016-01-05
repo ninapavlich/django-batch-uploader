@@ -903,7 +903,7 @@
             var total = this._uploadable_items.length+this._currently_processing_items.length+this._done_items.length+this._failed_items.length;
             var current = this._currently_processing_items.length+this._done_items.length+this._failed_items.length;
             var item = this._uploadable_items.length > 1? "Items" : "Item";
-            $(this.uploadable_group_header).html(this._uploadable_items.length++" "+item+" To Upload");            
+            $(this.uploadable_group_header).html(this._uploadable_items.length+" "+item+" To Upload");            
             $(this.processing_group_header).html("Processing "+current+" of "+total);
             $(this.done_group_header).html("Completed "+this._done_items.length+" of "+total);
             $(this.failed_group_header).html("Failed "+this._failed_items.length+" of "+total);
