@@ -22,6 +22,15 @@ from django.utils.translation import ugettext_lazy as _
 
 
 
+def get_empty_value_display(cls):
+    if hasattr(cls.model_admin, 'get_empty_value_display'):
+        return cls.model_admin.get_empty_value_display()
+    else:
+        # Django < 1.9
+        from django.contrib.admin.views.main import EMPTY_CHANGELIST_VALUE
+        return EMPTY_CHANGELIST_VALUE
+
+
 from django.contrib.admin.utils import (
     display_for_field, flatten_fieldsets, help_text_for_field, label_for_field,
     lookup_field,
@@ -131,13 +140,14 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
 
     def get_field_contents(self, field, obj):
         from django.contrib.admin.templatetags.admin_list import _boolean_icon
-        from django.contrib.admin.views.main import EMPTY_CHANGELIST_VALUE
+        
         model_admin = self
 
         try:
             f, attr, value = lookup_field(field, obj, self)
         except (AttributeError, ValueError, ObjectDoesNotExist):
-            result_repr = EMPTY_CHANGELIST_VALUE
+            result_repr = get_empty_value_display(self)
+
         else:
             if f is None:
                 boolean = getattr(attr, "boolean", False)
