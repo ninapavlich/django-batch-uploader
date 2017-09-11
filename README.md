@@ -67,6 +67,16 @@ have to go back and update them individually.
     class BaseImageAdmin(BaseBatchUploadAdmin):
 
         batch_url_name = "admin_image_batch_view"
+        
+        fieldsets = (
+            ("Image", {
+                'fields': ('image', 'title', 'alt', 'caption', 'credit','tags'),
+            }),
+            ("Meta", {
+                'fields': ('creator','admin_description'),
+            })
+        )
+
 
 #Screenshots
 
