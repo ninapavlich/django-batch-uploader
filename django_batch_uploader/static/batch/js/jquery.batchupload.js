@@ -1114,7 +1114,14 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
 
     var form_data = new FormData();
     for (key in this.data) {
-        form_data.append(key, this.data[key]);
+        const value = this.data[key];
+        if (Array.isArray(value)) {
+        value.forEach(val => {
+          form_data.append(`${key}`, val);
+        });
+      } else {
+        form_data.append(key, value);
+      }
     }
 
     this.failed_status = null;
