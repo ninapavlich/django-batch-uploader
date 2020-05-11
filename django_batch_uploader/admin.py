@@ -1,25 +1,30 @@
 import json
 import copy
 from mimetypes import MimeTypes
-import urllib
 
 from django.contrib import admin
-from django.contrib.admin.exceptions import DisallowedModelAdminToField
 from django.contrib.admin.models import LogEntry, ADDITION
 from django.contrib.admin.options import TO_FIELD_VAR
-from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied, ValidationError, NON_FIELD_ERRORS
+from django.core.exceptions import NON_FIELD_ERRORS, ObjectDoesNotExist
 from django.urls import reverse
 from django.db.models.fields.related import ManyToManyRel
-from django.http import HttpResponse, HttpResponseServerError
-from django.template.defaultfilters import capfirst, linebreaksbr
-from django.utils import six
-from django.utils.encoding import force_text, smart_text
-from django.utils.html import conditional_escape, format_html
+from django.http import HttpResponse
+from django.template.defaultfilters import linebreaksbr
+from django.utils.encoding import smart_text
+from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+import six
+
+from django.contrib.admin.utils import (
+    display_for_field, flatten_fieldsets, label_for_field,
+    lookup_field,
+)
+
+
+from .utils import get_media_file_name, get_media_file
 
 
 def get_empty_value_display(cls):
@@ -31,18 +36,10 @@ def get_empty_value_display(cls):
         return EMPTY_CHANGELIST_VALUE
 
 
-from django.contrib.admin.utils import (
-    display_for_field, flatten_fieldsets, help_text_for_field, label_for_field,
-    lookup_field,
-)
-
-
-from .utils import get_media_file_name, get_media_file
-
 class BaseBatchUploadAdmin(admin.ModelAdmin):
 
-    #Add batch_url to context
-    #batch_url_name = 'admin_image_batch_view'
+    # Add batch_url to context
+    # batch_url_name = 'admin_image_batch_view'
     change_list_template = "admin/batch_change_list.html"
 
     def changelist_view(self, request, extra_context=None):
@@ -67,13 +64,13 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
 
                 default_response = super(BaseBatchUploadAdmin, self).add_view(request, form_url, extra_context)
                 response = self.batch_upload_response(request)
-                if response != None:
+                if not response:
                     return response
                 else:
                     return default_response
 
             data = {
-                "success":False,
+                "success": False,
                 "errors":errors
             }
             json_dumped = json.dumps(data)
@@ -84,37 +81,30 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
 
 
     def validate_form(self, request, form_url, extra_context=None):
-        
+
         to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
 
         if to_field and not self.to_field_allowed(request, to_field):
-            return {NON_FIELD_ERRORS:"The field %s cannot be referenced." % to_field}
-
-        model = self.model
-        opts = model._meta
-        add = True
+            return {NON_FIELD_ERRORS: "The field %s cannot be referenced." % to_field}
 
         if not self.has_add_permission(request):
-            return {NON_FIELD_ERRORS:"Permission Denied"}
+            return {NON_FIELD_ERRORS: "Permission Denied"}
         obj = None
 
         ModelForm = self.get_form(request, obj)
         form = ModelForm(request.POST, request.FILES, instance=obj)
-        valid = form.is_valid()
         if not form.is_valid():
             error_dict = dict(form.errors.items())
             media_file_name = get_media_file_name(self, self.model)
-            
 
-            #BEGIN HACK -- Currently a second validation of the newly uploaded file results in a validation error.
+            # BEGIN HACK -- Currently a second validation of the newly uploaded file results in a validation error.
             if media_file_name in error_dict:
-                delete_indexes = []
                 i = 0
                 for error in copy.deepcopy(error_dict[media_file_name]):
                     from django.forms.fields import ImageField
                     ignore_validation_error = ImageField.default_error_messages['invalid_image']
                     ignore_validation_error_translated = _(ignore_validation_error)
-                    
+
                     if error == ignore_validation_error or error == ignore_validation_error_translated:
                         error_dict[media_file_name].pop(i)
                     i = i+1
@@ -135,13 +125,10 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
 
         return None
 
-        #If we made it to here with no errors, we're valid.
-
+        # If we made it to here with no errors, we're valid.
 
     def get_field_contents(self, field, obj):
         from django.contrib.admin.templatetags.admin_list import _boolean_icon
-        
-        model_admin = self
 
         try:
             f, attr, value = lookup_field(field, obj, self)
@@ -164,16 +151,13 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
                     result_repr = ", ".join(map(six.text_type, value.all()))
                 else:
                     result_repr = display_for_field(value, f, "")
-        
+
         return conditional_escape(result_repr)
 
     def batch_upload_response(self, request):
         output_fields = flatten_fieldsets(self.fieldsets)
-        
-        media_file_name = get_media_file_name(self, self.model)
 
-
-        #Disabling exception handling here @olivierdalang's feedback:
+        # Disabling exception handling here @olivierdalang's feedback:
         # try:
         latest_log_entry = LogEntry.objects.filter(action_flag=ADDITION).order_by('-action_time')[0]
         ct = ContentType.objects.get_for_id(latest_log_entry.content_type_id)
