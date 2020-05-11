@@ -10,7 +10,7 @@ from django.contrib.admin.options import TO_FIELD_VAR
 from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied, ValidationError, NON_FIELD_ERRORS
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models.fields.related import ManyToManyRel
 from django.http import HttpResponse, HttpResponseServerError
 from django.template.defaultfilters import capfirst, linebreaksbr

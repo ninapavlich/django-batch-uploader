@@ -2,7 +2,7 @@ import json
 from django import forms
 from django.contrib.admin import helpers
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.utils import ErrorDict, ErrorList, flatatt
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView
