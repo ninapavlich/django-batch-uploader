@@ -2,6 +2,7 @@
  * nina@cgpartnersllc.com
  */
 
+$batchUpload_jquery = jQuery.noConflict();
 
 ;(function ( $, window, document, undefined ) {
 
@@ -53,35 +54,35 @@
     BatchUpload.prototype = {
 
         init: function() {
-            
+
 
             this.renderInit();
 
-            this.addListeners();          
+            this.addListeners();
 
             this.render()
         },
 
         addSuccessMessage:function(text){
-            
+
             this._addMessage(text, "success", true);
 
         },
         addWarningMessage:function(text){
-            this._addMessage(text, "error", false);            
+            this._addMessage(text, "error", false);
         },
         _addMessage:function(text, cls, autohide){
-            var message =$('<li class="grp-'+cls+'"><ul \
-                class="grp-tools"><li><a href="#" class="grp-arrow-up-handler" \
-                title="Less"></a></li><li><a href="#" class="grp-arrow-down-handler" \
-                title="More"></a></li><li><a href="#" class="grp-delete-handler" \
-                title="Cancel Upload"></a></li></ul><div class="inner">'+text+'</div></li>');
+            var message =$('<li class="'+cls+'"><ul \
+                class="tools"><li><a href="#" class="arrow-up-handler" \
+                title="Less"></a></li><li><a href="#" class="arrow-down-handler" \
+                title="More"></a></li><li><a href="#" class="delete-handler" \
+                title="Cancel Upload">Cancel</a></li></ul><div class="inner">'+text+'</div></li>');
             $(this.messages_container).append(message);
 
             var max_height = 20;
             if($(message).height() > max_height){
 
-                $(message).find("a.grp-arrow-up-handler").hide();
+                $(message).find("a.arrow-up-handler").hide();
                 $(message).css("max-height", max_height+"px");
                 $(message).addClass("has-overflow");
 
@@ -89,40 +90,40 @@
                 $(message).bind("click", function(event){
 
                     if($(message).css("max-height")=="none"){
-                        $(message).find("a.grp-arrow-down-handler").show();
-                        $(message).find("a.grp-arrow-up-handler").hide();
+                        $(message).find("a.arrow-down-handler").show();
+                        $(message).find("a.arrow-up-handler").hide();
                         $(message).css("max-height", max_height+"px");
                     }else{
-                        $(message).find("a.grp-arrow-down-handler").hide();
-                        $(message).find("a.grp-arrow-up-handler").show();
+                        $(message).find("a.arrow-down-handler").hide();
+                        $(message).find("a.arrow-up-handler").show();
                         $(message).css("max-height", "none");
                     }
-                    
+
                 });
 
             }else{
-                $(message).find("a.grp-arrow-up-handler").hide();
-                $(message).find("a.grp-arrow-down-handler").hide();
+                $(message).find("a.arrow-up-handler").hide();
+                $(message).find("a.arrow-down-handler").hide();
             }
 
-            $(message).find("a.grp-delete-handler").bind("click", function(event){
+            $(message).find("a.delete-handler").bind("click", function(event){
                 $(message).slideUp();
             });
-            
+
 
             if(autohide === true){
                 setTimeout(function(){
                     $(message).slideUp();
                 }, 10000)
             }
-            
+
         },
-        
+
         /* Public function */
         clearUploadQueue:function(){
             var original_length = this._rendered_uploadable_items.length;
             while(this._rendered_uploadable_items.length > 0){
-                var item = this._rendered_uploadable_items[0];    
+                var item = this._rendered_uploadable_items[0];
                 this.removeUploadableItem(item);
             }
             this.render();
@@ -130,7 +131,7 @@
             this.addSuccessMessage(original_length+" items removed from the upload queue.");
         },
         startUploads:function(){
-            
+
             if(this._rendered_uploadable_items.length < 1){
                 this.going = false;
                 this.render();
@@ -142,11 +143,11 @@
                 this.render();
                 return;
             }
-            
+
 
 
             this.going = true;
-            
+
 
             var first_item = this._rendered_uploadable_items[0];
             var file = $(first_item).data("file");
@@ -165,7 +166,7 @@
             this.addSuccessMessage("The upload queue has paused.");
         },
         uploadComplete:function(item, file, data){
-            
+
             this.removeUploadingItem(item);
             this.addDoneItem(file, data);
             this.render();
@@ -174,10 +175,10 @@
                     "+file.filename+" completed successfully.");
 
             if(this.going == true){
-                this.startUploads();    
+                this.startUploads();
             }
         },
-        
+
         uploadFailed:function(item, file, data, status, error){
 
             this.removeUploadingItem(item);
@@ -188,7 +189,7 @@
                     "+file.filename+" failed: "+status+" "+error);
 
             if(this.going == true){
-                this.startUploads();    
+                this.startUploads();
             }
         },
         /* Internal Functions */
@@ -198,7 +199,7 @@
 
             $(this.add_items_button).bind("click", function(event){
                 event.preventDefault();
-                parent.addItems();    
+                parent.addItems();
             });
 
             $(this.form_file_input_field).bind("change", function(event){
@@ -211,7 +212,7 @@
 
 
                 if(parent.going == false){
-                    parent.startUploads();    
+                    parent.startUploads();
                 }
             });
 
@@ -220,17 +221,17 @@
                 parent.clearUploadQueue();
             });
 
-            
+
             $(this.pause_uploading_button).bind("click", function(event){
                 event.preventDefault();
                 parent.pauseUploads();
             });
 
-            
+
         },
 
         removeListeners: function() {
-            //unbind events           
+            //unbind events
         },
         hasFileInQueue: function(new_file){
             for(var i=0; i < this._uploadable_items.length; i++) {
@@ -249,10 +250,10 @@
                 var has_file = this.hasFileInQueue(file);
                 if(has_file==false){
                     var uploadable_file = new UploadableItem(file, this.render_preview_function, this.render_response_function);
-                    this.addUploadableItem(uploadable_file, null);    
-                }                
+                    this.addUploadableItem(uploadable_file, null);
+                }
             }
-            
+
             try{
                 //http://stackoverflow.com/questions/1703228/how-to-clear-file-input-with-javascript
                 this.form_file_input_field.value = '';
@@ -272,7 +273,7 @@
             var container_html = this.renderContainer();
             $(this.element).html(container_html);
 
-            this.messages_container = $(document).find("ul.grp-messagelist")[0];
+            this.messages_container = $(document).find("ul.messagelist")[0];
 
             this.batch_container = $(this.element).find(".batch-container")[0];
             this.uploadable_container = $(this.element).find(".uploadable-container")[0];
@@ -284,10 +285,10 @@
             this.results_container = $(this.element).find(".results-container")[0];
             this.uploadable_items_container = $(this.element).find(".uploadable-container .items")[0];
 
-            this.uploadable_group_header = $(this.element).find("#uploadable-group h2")[0];
-            this.processing_group_header = $(this.element).find("#processing-group h2")[0];
-            this.failed_group_header = $(this.element).find("#failed-group h2")[0];
-            this.done_group_header = $(this.element).find("#done-group h2")[0];
+            this.uploadable_group_header = $(this.element).find("#uploadable-group h3")[0];
+            this.processing_group_header = $(this.element).find("#processing-group h3")[0];
+            this.failed_group_header = $(this.element).find("#failed-group h3")[0];
+            this.done_group_header = $(this.element).find("#done-group h3")[0];
 
             this.original_form = $(this.options.form)[0];
             this.form_url = $(this.original_form).attr("action")
@@ -305,9 +306,9 @@
 
             this.add_items_button = $(this.element).find("a.add-items")[0];
             this.form_trigger = $(this.element).find("form.trigger")[0];
-            this.form_file_input_field = $(this.element).find("input#files")[0]; 
+            this.form_file_input_field = $(this.element).find("input#files")[0];
             this.start_uploading_button = $(this.element).find("a.start-uploading")[0];
-            this.pause_uploading_button = $(this.element).find("a.pause-uploading")[0];   
+            this.pause_uploading_button = $(this.element).find("a.pause-uploading")[0];
             this.clear_queue_button = $(this.element).find("a.clear-queue")[0];
 
             this.other_browser_label = $(this.element).find("span.others")[0];
@@ -319,27 +320,27 @@
                 $(this.other_browser_label).hide();
             }
 
-            this.uploadable_header_container = $(this.uploadable_container).find(".grp-thead .grp-tr")[0];
-            this.current_header_container = $(this.current_container).find(".grp-thead .grp-tr")[0];
-            this.failed_header_container = $(this.failed_container).find(".grp-thead .grp-tr")[0];
-            this.done_header_container = $(this.done_container).find(".grp-thead .grp-tr")[0];
+            this.uploadable_header_container = $(this.uploadable_container).find("thead tr")[0];
+            this.current_header_container = $(this.current_container).find("thead tr")[0];
+            this.failed_header_container = $(this.failed_container).find("thead tr")[0];
+            this.done_header_container = $(this.done_container).find("thead tr")[0];
 
-            this.uploadable_list_container = $(this.uploadable_container).find(".grp-tbody")[0];
-            this.current_list_container = $(this.current_container).find(".grp-tbody")[0];
-            this.failed_list_container = $(this.failed_container).find(".grp-tbody")[0];
-            this.done_list_container = $(this.done_container).find(".grp-tbody")[0];
+            this.uploadable_list_container = $(this.uploadable_container).find("tbody")[0];
+            this.current_list_container = $(this.current_container).find("tbody")[0];
+            this.failed_list_container = $(this.failed_container).find("tbody")[0];
+            this.done_list_container = $(this.done_container).find("tbody")[0];
 
 
 
-            this.initUploadableItems();   
+            this.initUploadableItems();
             this.initUploadingItems();
             this.initDoneItems();
             this.initFailedItems();
 
-            this.initGrappelliHooks();
+            this.initWidgetHooks();
 
-            
-            
+
+
         },
         render: function() {
             //Update view
@@ -349,7 +350,7 @@
             }else{
                 $(this.defaults_container).hide();
             }
-            
+
             if(this._uploadable_items.length > 0){
                 $(this.clear_queue_button).show();
                 $(this.uploadable_items_container).show();
@@ -400,94 +401,94 @@
                 $(this.done_container).hide();
             }
 
-            
+
         },
         renderContainer: function(){
             return '<div class="batch-container">\
                 <div class="uploadable-container">\
-                    <h2>1. Select Items to Upload</h2>\
+                    <div class="module section"><h2>Step 1: Select Items to Upload</h2></div>\
                     <form action="" method="post" enctype="multipart/form-data" class="trigger">\
                         <span class="others">Drop Files Here - or - Click to Upload</span>\
                         <span class="ie">Double-Click to Upload</span>\
-                        <input name="files[]" id="files" type="file" multiple="" class="grp-button grp-default"/>\
-                        <div class="button-container">\
-                            <a href="#" class="grp-button grp-default clear-queue">Clear Upload Queue</a>\
-                        </div>\
+                        <input name="files[]" id="files" type="file" multiple="" class="button default"/>\
                     </form>\
+                    <div class="button-container">\
+                        <a href="#" class="button default clear-queue">Clear Upload Queue</a>\
+                    </div>\
                     <div class="defaults-container">\
-                        <h2>2. Apply Default Upload Values</h2>\
+                        <div class="module section"><h2>Step 2: Apply Default Upload Values</h2></div>\
                         <p class="instructions">Use this section to set the default values of each field for items uploaded in bulk. If an individual value is specified below, then that individual value will override the defaults here.</p>\
-                        <fieldset class="grp-module">\
-                            <h3 class="grp-collapse-handler">Upload Defaults</h3>\
+                        <fieldset class="module aligned ">\
+                            <h3>Upload Defaults</h3>\
                             <div class="defaults"></div>\
                         </fieldset>\
                     </div>\
                     <div class="items">\
-                        <h2>3. Apply Individual Upload Values</h2>\
-                        <div class="grp-group grp-tabular uploadable-nested-inline nested-inline " id="uploadable-group">\
-                            <h2 class="grp-collapse-handler">Items To Upload</h2>\
-                            <div class="grp-module grp-table">\
-                                <div class="grp-module grp-thead">\
-                                    <div class="grp-tr"></div>\
-                                </div>\
-                                <div class="grp-module grp-tbody">\
-                                    <div class="grp-tr"></div>\
-                                </div>\
-                            </div>\
+                        <div class="module section"><h2>Step 3: Apply Individual Upload Values</h2></div>\
+                        <div class="group tabular uploadable-nested-inline nested-inline " id="uploadable-group">\
+                            <h3>Items To Upload</h3>\
+                            <table class="module">\
+                                <thead class="module">\
+                                    <tr></tr>\
+                                </thead>\
+                                <tbody class="module">\
+                                    <tr></tr>\
+                                </tbody>\
+                            </table>\
                         </div>\
                     </div>\
                     <div class="start-container">\
                         <!--<h2>4. Begin Upload</h2>\
                         <p class="instructions">Click "Start Uploading" to begin uploading. "Pause Uploading" will allow the current item to finish but not process any more items in the queue. To halt an item while uploading, click the (X) button on the left.</p>-->\
                         <div class="button-container">\
-                            <a href="#" class="grp-button grp-default start-uploading">Start Uploading</a>\
-                            <a href="#" class="grp-button grp-default pause-uploading">Pause Uploading</a>\
+                            <a href="#" class="button default start-uploading">Start Uploading</a>\
+                            <a href="#" class="button default pause-uploading">Pause Uploading</a>\
                         </div>\
                     </div>\
                 </div>\
                 <div class="current-container">\
                     <div class="items">\
-                        <div class="grp-group grp-tabular processing-nested-inline nested-inline " id="processing-group">\
-                            <h2 class="grp-collapse-handler">Processing</h2>\
-                            <div class="grp-module grp-table">\
-                                <div class="grp-module grp-thead">\
-                                    <div class="grp-tr"></div>\
-                                </div>\
-                                <div class="grp-module grp-tbody">\
-                                    <div class="grp-tr"></div>\
-                                </div>\
-                            </div>\
+                        <div class="group tabular processing-nested-inline nested-inline " id="processing-group">\
+                            <h3>Processing</h3>\
+                            <table class="module">\
+                                <thead class="module">\
+                                    <tr></tr>\
+                                </thead>\
+                                <tbody class="module">\
+                                    <tr></tr>\
+                                </tbody>\
+                            </table>\
                         </div>\
                     </div>\
                 </div>\
                 <div class="results-container">\
                     <div class="failed-container">\
                         <div class="items">\
-                            <div class="grp-group grp-tabular failed-nested-inline nested-inline " id="failed-group">\
-                                <h2 class="grp-collapse-handler">Failed</h2>\
-                                <div class="grp-module grp-table">\
-                                    <div class="grp-module grp-thead">\
-                                        <div class="grp-tr"></div>\
-                                    </div>\
-                                    <div class="grp-module grp-tbody">\
-                                        <div class="grp-tr"></div>\
-                                    </div>\
-                                </div>\
+                            <div class="group tabular failed-nested-inline nested-inline " id="failed-group">\
+                                <h3>Failed</h3>\
+                                <table class="module">\
+                                    <thead class="module">\
+                                        <tr></tr>\
+                                    </thead>\
+                                    <tbody class="module">\
+                                        <tr></tr>\
+                                    </tbody>\
+                                </table>\
                             </div>\
                         </div>\
                     </div>\
                     <div class="done-container">\
                         <div class="items">\
-                            <div class="grp-group grp-tabular done-nested-inline nested-inline " id="done-group">\
-                                <h2 class="grp-collapse-handler">Completed Uploads</h2>\
-                                <div class="grp-module grp-table">\
-                                    <div class="grp-module grp-thead">\
-                                        <div class="grp-tr"></div>\
-                                    </div>\
-                                    <div class="grp-module grp-tbody">\
-                                        <div class="grp-tr"></div>\
-                                    </div>\
-                                </div>\
+                            <div class="group tabular done-nested-inline nested-inline " id="done-group">\
+                                <h3>Completed Uploads</h3>\
+                                <table class="module">\
+                                    <thead class="module">\
+                                        <tr></tr>\
+                                    </thead>\
+                                    <tbody class="module">\
+                                        <tr></tr>\
+                                    </tbody>\
+                                </table>\
                             </div>\
                         </div>\
                     </div>\
@@ -503,8 +504,8 @@
             $(inputs).each(function(index, item) {
                 var is_allowed = parent.options.allow_default_fields.indexOf(item.name) >= 0;
                 if(!is_allowed){
-                    $(cloned_form).find(".grp-row."+item.name).remove();
-                }                
+                    $(cloned_form).find(".row."+item.name).remove();
+                }
             });
 
             return $(cloned_form).html();
@@ -514,32 +515,32 @@
             var cloned_form = $(this.original_form).clone();
             var inputs = $(cloned_form).find(":input");
 
-            var preview_header_html = '<div class="grp-th preview">Preview</div>';
+            var preview_header_html = '<th class="preview">Preview</th>';
             $(parent.uploadable_header_container).append(preview_header_html);
 
             $(inputs).each(function(index, item) {
                 var is_allowed = parent.options.allow_detail_fields.indexOf(item.name) >= 0;
                 if(is_allowed){
-                    var label = $(cloned_form).find(".grp-row."+item.name+" label").text();
-                    var header_html = '<div class="grp-th '+item.name+'">'+label+'</div>';
+                    var label = $(cloned_form).find("."+item.name+" label").text() || item.name;
+                    var header_html = '<th '+item.name+'">'+label+'</th>';
                     $(parent.uploadable_header_container).append(header_html);
-                }                
+                }
             });
 
-            var tools_header_html = '<div class="grp-th tools">Remove</div>';
-            $(parent.uploadable_header_container).append(tools_header_html);   
+            var tools_header_html = '<th class="tools">Remove</th>';
+            $(parent.uploadable_header_container).append(tools_header_html);
         },
         addUploadableItem: function(file, previous_data){
             var parent = this;
 
             //render html
-            var html = $('<div class="grp-tr"></div>');
+            var html = $('<tr></tr>');
 
             $(html).data("file", file);
 
-              
 
-            var preview_container = $('<div class="grp-td preview"></div>');
+
+            var preview_container = $('<td class="preview"></td>');
             $(preview_container).append(file.preview);
             $(html).append(preview_container);
 
@@ -549,23 +550,21 @@
             var item_index = this._rendered_uploadable_items.length;
             $(inputs).each(function(index, item) {
                 var is_allowed = parent.options.allow_detail_fields.indexOf(item.name) >= 0;
-                if(is_allowed){                    
+                if(is_allowed){
                     var cloned = $(item).clone();
                     $(cloned).attr("id", $(cloned).attr("id").replace("id_", "id_uploadableset-"+item_index+"-"))
-                    var cell = $('<div class="grp-td '+item.name+'"></div>');
+                    var cell = $('<td class="'+item.name+'"></td>');
                     $(cell).html(cloned);
-                    var help_text = $(cloned_form).find(".grp-row."+item.name+" .grp-help")
+                    var help_text = $(cloned_form).find(".row."+item.name+" .help")
                     $(cell).append(help_text);
                     $(html).append(cell);
                 }
             });
 
-            var tools_html = '<div class="grp-td tools"><ul class="grp-tools" \
-                style="top:0px !important;"><li><a href="#" \
-                class="grp-delete-handler"></a></li></ul></div>';
-            $(html).append(tools_html);    
+            var tools_html = '<td class="tools"><a href="#" class="button delete-handler">Remove</a></td>';
+            $(html).append(tools_html);
 
-            
+
             $(this.uploadable_list_container).append(html);
 
             //Apply default values:
@@ -582,15 +581,15 @@
 
                     //check box if its a checkbox
                     if(value === "on"){ $(html).find("[name='"+key+"']").attr("checked", true);}
-                }   
+                }
             }
-            
-            
+
+
             //add listeners
-            $(html).find("a.grp-delete-handler").bind("click", function(event){
+            $(html).find("a.delete-handler").bind("click", function(event){
                 event.preventDefault();
-                parent.removeUploadableItem(html);  
-                parent.render();        
+                parent.removeUploadableItem(html);
+                parent.render();
             });
 
             //add to _rendered_uploadable_items
@@ -613,7 +612,7 @@
             if (index > -1) { this._uploadable_items.splice(index, 1); }
 
             //REMOVE LISTENERS
-            $(html).find("a.grp-delete-handler").unbind("click");
+            $(html).find("a.delete-handler").unbind("click");
 
             //REMOVE MARKUP
             $(html).remove();
@@ -626,70 +625,67 @@
             var cloned_form = $(this.original_form).clone();
             var inputs = $(cloned_form).find(":input");
 
-            var preview_header_html = '<div class="grp-th preview">Preview</div>';
+            var preview_header_html = '<th class="preview">Preview</th>';
             $(parent.current_header_container).append(preview_header_html);
 
-            var values_header_html = '<div class="grp-th values">Values</div>';
+            var values_header_html = '<th class="values">Values</th>';
             $(parent.current_header_container).append(values_header_html);
 
-            var progress_header_html = '<div class="grp-th progress">Loading</div>';
+            var progress_header_html = '<th class="progress">Loading</th>';
             $(parent.current_header_container).append(progress_header_html);
 
-            var tools_header_html = '<div class="grp-th tools">Halt</div>';
-            $(parent.current_header_container).append(tools_header_html);   
-           
+            var tools_header_html = '<th class="tools">Halt</th>';
+            $(parent.current_header_container).append(tools_header_html);
+
         },
         addUploadingItem: function(file, data){
             var parent = this;
 
-            
+
             //render html
-            var html = $('<div class="grp-tr"></div>');
+            var html = $('<tr></tr>');
 
             $(html).data("file", file);
             $(html).data("data", data);
 
-                
 
-            var preview_container = $('<div class="grp-td preview"></div>');
+
+            var preview_container = $('<td class="preview"></td>');
             $(preview_container).append(file.preview);
             $(html).append(preview_container);
 
-            var values_container = $('<div class="grp-td values"></div>');
+            var values_container = $('<td class="values"></td>');
             for (key in data) {
                 $(values_container).append("<p><strong>"+key+":</strong> "+data[key]+"</p>");
             }
             $(html).append(values_container);
 
-            var progress_container = $('<div class="grp-td progress">\
+            var progress_container = $('<td class="progress">\
                 <div class="status-message"></div><div class="progress">\
-                <span class="indicator"></span></div></div>');
+                <span class="indicator"></span></div></td>');
 
             var status_message = $(progress_container).find(".status-message")[0];
             var progress_indicator = $(progress_container).find(".progress")[0];
-            $(html).append(progress_container);      
+            $(html).append(progress_container);
 
 
-            var tools_html = '<div class="grp-td tools"><ul class="grp-tools" \
-                style="top:0px !important; float: left;"><li><a href="#" class="grp-delete-handler" \
-                title="Cancel Upload"></a></li></ul><p class="grp-help" \
-                style="padding-left: 30px;width:80px;">WARNING: \
-                Halting an upload mid-way may have unpredictable effects.</p></div>';
+            var tools_html = '<td><a href="#" class="button delete-handler" title="Cancel Upload">Cancel</a><p class="help" \
+                >WARNING: Halting an upload mid-way may have unpredictable effects.</p></td>';
 
-            $(html).append(tools_html);  
-            
-            
+            $(html).append(tools_html);
+
+
             $(this.current_list_container).append(html);
-            
+
             //add listeners
-            $(html).find("a.grp-delete-handler").bind("click", function(event){
+            $(html).find("a.delete-handler").bind("click", function(event){
                 event.preventDefault();
-                
+
                 file.stop_upload();
-                parent.addUploadableItem(file, data);    
-                parent.removeUploadingItem(html);   
-                parent.going = false;  
-                parent.render();           
+                parent.addUploadableItem(file, data);
+                parent.removeUploadingItem(html);
+                parent.going = false;
+                parent.render();
             });
 
             $(file).bind(UploadableItem.event_upload_started, function(event){
@@ -697,14 +693,14 @@
                 $(progress_indicator).addClass("loading");
             });
 
-         
+
             $(file).bind(UploadableItem.event_upload_done, function(event, file, data){
                 $(status_message).text("Done");
                 $(progress_indicator).removeClass("loading");
                 $(progress_indicator).addClass("done");
                 parent.uploadComplete(html, file, data);
 
-                
+
             });
 
             $(file).bind(UploadableItem.event_upload_failed, function(event, status, error){
@@ -714,7 +710,7 @@
 
                 parent.uploadFailed(html, file, data, status, error);
 
-                
+
             });
 
             $(file).bind(UploadableItem.event_upload_cancelled, function(event){
@@ -730,12 +726,12 @@
 
             file.start_upload(this.form_url, this.form_method, this.options.filename_field, data);
 
-             
+
 
             //add to _rendered_uploadable_items
             this._currently_processing_items.push(file);
             this._rendered_currently_processing_items.push(html);
-            
+
 
             this.updateHeaders();
 
@@ -751,7 +747,7 @@
             if (index > -1) { this._currently_processing_items.splice(index, 1); }
 
             //REMOVE LISTENERS
-            $(html).find("a.grp-delete-handler").unbind("click");
+            $(html).find("a.delete-handler").unbind("click");
 
             $(file).unbind(UploadableItem.event_upload_started);
             $(file).unbind(UploadableItem.event_upload_done);
@@ -769,28 +765,28 @@
             var cloned_form = $(this.original_form).clone();
             var inputs = $(cloned_form).find(":input");
 
-            var preview_header_html = '<div class="grp-th preview">Uploaded Items</div>';
+            var preview_header_html = '<th class="preview">Uploaded Items</th>';
             $(parent.done_header_container).append(preview_header_html);
-           
 
-            
+
+
         },
         addDoneItem: function(file, data){
             var parent = this;
 
-            
+
             //render html
-            var html = $('<div class="grp-tr"></div>');
+            var html = $('<tr></tr>');
 
             $(html).data("data", data);
-            
-            var preview_container = $('<div class="grp-td preview"></div>');
+
+            var preview_container = $('<td class="preview"></td>');
             $(preview_container).append(file.response);
             $(html).append(preview_container);
-  
-            
+
+
             $(this.done_list_container).append(html);
-            
+
 
             //add to _rendered_uploadable_items
             this._rendered_done_items.push(html);
@@ -805,76 +801,75 @@
             var inputs = $(cloned_form).find(":input");
 
 
-            var preview_header_html = '<div class="grp-th preview">Preview</div>';
+            var preview_header_html = '<th class="preview">Preview</th>';
             $(parent.failed_header_container).append(preview_header_html);
 
-            var values_header_html = '<div class="grp-th values">Values</div>';
+            var values_header_html = '<th class="values">Values</th>';
             $(parent.failed_header_container).append(values_header_html);
 
-            var values_header_html = '<div class="grp-th error">Error</div>';
+            var values_header_html = '<th class="error">Error</th>';
             $(parent.failed_header_container).append(values_header_html);
 
-            var tools_header_html = '<div class="grp-th tools">Tools</div>';
-            $(parent.failed_header_container).append(tools_header_html);   
+            var tools_header_html = '<th class="tools">Tools</th>';
+            $(parent.failed_header_container).append(tools_header_html);
 
-           
+
         },
         addFailedItem: function(file, data){
             var parent = this;
 
-            
+
             //render html
-            var html = $('<div class="grp-tr"></div>');
+            var html = $('<tr></tr>');
 
             $(html).data("file", file);
 
-              
 
-            var preview_container = $('<div class="grp-td preview"></div>');
+
+            var preview_container = $('<td class="preview"></td>');
             $(preview_container).append(file.preview);
             $(html).append(preview_container);
 
-            var values_container = $('<div class="grp-td values"></div>');
+            var values_container = $('<td class="values"></td>');
             for (key in data) {
                 $(values_container).append("<p><strong>"+key+":</strong> "+data[key]+"</p>");
             }
             $(html).append(values_container);
 
-            var error_container = $('<div class="grp-td error"><pre>'+file.failed_response+'</pre></div>');
-            $(html).append(error_container);    
+            var error_container = $('<td class="error"><pre>'+file.failed_response+'</pre></td>');
+            $(html).append(error_container);
 
 
-            var tools_html = '<div class="grp-td tools"><ul class="grp-text-tools" \
-                style="top:0px !important; float: left;"><li><a href="#" class="grp-delete-handler" \
-                title="Remove Item">Remove</a></li><li><a href="#" class="grp-refresh-handler" \
-                title="Retry Item">Retry</a></li></ul></div>';
+            var tools_html = '<td><a href="#" class="button delete-handler" \
+                title="Remove Item">Remove</a><a href="#" class="button refresh-handler" \
+                title="Retry Item">Retry</a></td>';
 
-            $(html).append(tools_html);      
+            $(html).append(tools_html);
 
-            
+
             $(this.failed_list_container).append(html);
-            
+
             //add listeners
-            $(html).find("a.grp-delete-handler").bind("click", function(event){
+            $(html).find("a.delete-handler").bind("click", function(event){
                 event.preventDefault();
-                
-                parent.removeFailedItem(html);  
-                parent.render();            
+
+                parent.removeFailedItem(html);
+                parent.render();
             });
-            $(html).find("a.grp-refresh-handler").bind("click", function(event){
+            $(html).find("a.refresh-handler").bind("click", function(event){
                 event.preventDefault();
-                
-                parent.removeFailedItem(html); 
-                parent.addUploadableItem(file, data);  
-                parent.render();     
+
+                parent.removeFailedItem(html);
+                parent.addUploadableItem(file, data);
+                parent.render();
             });
 
-             
+
 
             //add to _rendered_uploadable_items
             this._failed_items.push(file);
             this._rendered_failed_items.push(html);
-            
+
             this.updateHeaders();
 
         },
@@ -889,8 +884,8 @@
             if (index > -1) { this._failed_items.splice(index, 1); }
 
             //REMOVE LISTENERS
-            $(html).find("a.grp-delete-handler").unbind("click");
-            $(html).find("a.grp-refresh-handler").unbind("click");
+            $(html).find("a.delete-handler").unbind("click");
+            $(html).find("a.refresh-handler").unbind("click");
 
 
             //REMOVE MARKUP
@@ -900,10 +895,11 @@
 
         },
         updateHeaders: function(){
+
             var total = this._uploadable_items.length+this._currently_processing_items.length+this._done_items.length+this._failed_items.length;
             var current = this._currently_processing_items.length+this._done_items.length+this._failed_items.length;
             var item = this._uploadable_items.length > 1? "Items" : "Item";
-            $(this.uploadable_group_header).html(this._uploadable_items.length+" "+item+" To Upload");            
+            $(this.uploadable_group_header).html(this._uploadable_items.length+" "+item+" To Upload");
             $(this.processing_group_header).html("Processing "+current+" of "+total);
             $(this.done_group_header).html("Completed "+this._done_items.length+" of "+total);
             $(this.failed_group_header).html("Failed "+this._failed_items.length+" of "+total);
@@ -925,25 +921,25 @@
         },
         getFormValues: function(container){
             var output = {};
-            
+
             var inputs = $(container).find(":input");
 
             //Remove all fields that aren't explicitely defined in allow_defaults
             $(inputs).each(function(index, item) {
 
-                
+
                 var value =$(item).val();
                 var skip_item = String($(item).attr("type")).toLowerCase() == "checkbox" && item.checked==false;
 
-                
+
                 if( skip_item ){
-                    
+
                     // console.log("skip this un-checked item..."+item.name);
                     //continue
 
                 }else{
                     // console.log($(item).attr("type")+" "+item.name+" = "+value+" "+item.checked);
-                
+
                     if (output[item.name] !== undefined) {
                         if (!output[item.name].push) {
                             output[item.name] = [output[item.name]];
@@ -951,43 +947,44 @@
                         output[item.name].push(value || '');
                     } else {
                         output[item.name] = value || '';
-                    } 
+                    }
                 }
 
-                
+
             });
 
             return output;
         },
-        initGrappelliHooks: function(){
-            $("#grp-content-container .grp-collapse").grp_collapsible({
-                on_init: function(elem, options) {
-                    // open collapse (and all collapse parents) in case of errors
-                    if (elem.find("ul.errorlist").length > 0) {
-                        elem.removeClass("grp-closed")
-                            .addClass("grp-open");
-                        elem.parents(".grp-collapse")
-                            .removeClass("grp-closed")
-                            .addClass("grp-open");
-                    }
-                }
-            });
+        initWidgetHooks: function(){
+            //TODO
+            // $("#content-container .collapse").grp_collapsible({
+            //     on_init: function(elem, options) {
+            //         // open collapse (and all collapse parents) in case of errors
+            //         if (elem.find("ul.errorlist").length > 0) {
+            //             elem.removeClass("closed")
+            //                 .addClass("open");
+            //             elem.parents(".collapse")
+            //                 .removeClass("closed")
+            //                 .addClass("open");
+            //         }
+            //     }
+            // });
         },
         renderPreview: function(src, content_type, filename){
-            
+
             var MAX_HEIGHT = 75;
             var isImage = content_type.indexOf('image') >= 0;
             var pieces = content_type.split("/");
-            var contentTypeClass = pieces.length > 0? 'type-'+pieces[0] : 'type-unknown';            
+            var contentTypeClass = pieces.length > 0? 'type-'+pieces[0] : 'type-unknown';
             var isData = src.indexOf('data:') >= 0;
-            
-            var preview = null;    
+
+            var preview = null;
 
             if(isImage){
-                if(isData){                
-                    preview = $('<div class="preview image '+contentTypeClass+'"><p>'+filename+'</p><canvas/><p class="grp-help">Don\'t worry if this preview looks a little distorted, it won\'t look like that when the file is uploaded.</p></div>');
-                }else{                
-                    preview = $('<div class="preview image '+contentTypeClass+'"><p>'+filename+'</p><a href="'+src+'"><canvas/></a><p class="grp-help">Don\'t worry if this preview looks a little distorted, it won\'t look like that when the file is uploaded.</p></div>');
+                if(isData){
+                    preview = $('<div class="preview image '+contentTypeClass+'"><p>'+filename+'</p><canvas/><p class="help">Don\'t worry if this preview looks a little distorted, it won\'t look like that when the file is uploaded.</p></div>');
+                }else{
+                    preview = $('<div class="preview image '+contentTypeClass+'"><p>'+filename+'</p><a href="'+src+'"><canvas/></a><p class="help">Don\'t worry if this preview looks a little distorted, it won\'t look like that when the file is uploaded.</p></div>');
                 }
 
                 var canvas = $(preview).find("canvas")[0];
@@ -1006,9 +1003,9 @@
                 };
                 image.src = src;
 
-            }else if(isData){                
+            }else if(isData){
                 preview = $('<div class="preview file '+contentTypeClass+'"><p>'+filename+'</p></div>');
-            }else{                
+            }else{
                 preview = $('<div class="preview file '+contentTypeClass+'"><a href="'+src+'"><p>'+filename+'</p></a></div>');
             }
             return preview
@@ -1019,7 +1016,7 @@
             for (key in data) {
                 preview += "<p><strong>"+key+":</strong> "+data[key]+"</p>";
             }
-            
+
             return preview;
         },
         getIEVersion: function(){
@@ -1044,9 +1041,9 @@
         });
     };
 
-})( grp.jQuery, window, document );
+})( $batchUpload_jquery, window, document );
 BatchUpload = {};
-BatchUpload.VERSION = "0.12";
+BatchUpload.VERSION = "1.0";
 //$( document ).ready(function() {
 //  $(".selector").pluginName();
 //});
@@ -1054,7 +1051,7 @@ BatchUpload.VERSION = "0.12";
 
 
 var UploadableItem = function(file, preview_markup_function, response_markup_function) {
-    
+
     this.file = file;
     this.preview_markup_function = preview_markup_function;
     this.response_markup_function = response_markup_function;
@@ -1071,10 +1068,10 @@ var UploadableItem = function(file, preview_markup_function, response_markup_fun
     this.failed_response = null;
 
     this.add_listeners();
-    
+
     this.oFReader.readAsDataURL(file);
 
-    
+
 
 }
 /* STATIC PROPERTIES */
@@ -1119,28 +1116,28 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
 
     this.failed_status = null;
     this.failed_response = null;
-           
+
 
     //Notify server to return JSON response
-    form_data.append("batch", "True");    
+    form_data.append("batch", "True");
 
     this.active_xhr = $.ajax({
-        url: this.form_url, 
+        url: this.form_url,
         type: this.form_method,
         data: form_data,
         contentType: false,
         cache: false,
         processData: false,
-        success: function(data) {
+        success: function(data, textStatus, xhr) {
             parent.completed_xhr = parent.active_xhr;
-                        
+            console.log(xhr.status);
 
-            success = String(data['success']).toLowerCase()=='true';
+            success = xhr.status === 200;
 
             if(success){
                 try{
-                    parent.response_data = data['files'][0];   
-                    
+                    parent.response_data = data['files'][0];
+
                 }catch(e){
                     parent.response_data = {}
                 }
@@ -1156,7 +1153,7 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
                 parent.failed_response = error_message;
                 $(parent).trigger(UploadableItem.event_upload_failed, [error_status, error_message]);
             }
-            
+
 
             parent.active_xhr = null;
 
@@ -1171,17 +1168,17 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
             parent.failed_status = xhr.status;
             parent.failed_response = xhr.responseText;
 
-            $(parent).trigger(UploadableItem.event_upload_failed, [xhr.status, '<pre>'+xhr.responseText+'</pre>']);  
+            $(parent).trigger(UploadableItem.event_upload_failed, [xhr.status, '<pre>'+xhr.responseText+'</pre>']);
 
             parent.completed_xhr = parent.active_xhr;
             parent.active_xhr = null;
 
-            
+
         }
     })
 
-    $(this).trigger(UploadableItem.event_upload_started);  
-    
+    $(this).trigger(UploadableItem.event_upload_started);
+
 }
 UploadableItem.prototype.renderErrors = function(errors){
     preview = "";
@@ -1195,10 +1192,7 @@ UploadableItem.prototype.stop_upload = function(){
         this.cancelled = true;
         this.active_xhr.abort();
         this.active_xhr = null;
-        $(this).trigger(UploadableItem.event_upload_cancelled);  
+        $(this).trigger(UploadableItem.event_upload_cancelled);
     }
 
 }
-
-
-

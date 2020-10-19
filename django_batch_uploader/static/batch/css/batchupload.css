@@ -16,20 +16,18 @@
   }
 }
 
-h2{
-  clear:both;
-  padding:0.5em 0;
-  font-size:16px;
+.module.section{
+    margin-bottom: 0;
 }
 
 form.trigger{
   position: relative;
   overflow: hidden;
-  margin: 10px 0;
+
 
   padding: 5px 10px 4px;
-  
-  
+
+
   background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi…pZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
   background-size: 100%;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e5e5e5),color-stop(100%, #dbdbdb));
@@ -37,8 +35,8 @@ form.trigger{
   background-image: -webkit-linear-gradient(#e5e5e5,#dbdbdb);
   background-image: linear-gradient(#e5e5e5,#dbdbdb);
   border: 1px solid #ccc;
- 
-   
+
+
 
   height:100px;
   text-align: center;
@@ -70,9 +68,7 @@ form.trigger span{
   font-weight: bold;
 
 }
-.grp-text-tools{
-  //text-align: center;
-}
+
 .grp-text-tools a{
   display:block;
   font-weight: bold;
@@ -86,12 +82,15 @@ form.trigger span{
 .instructions{
   margin:0.5em 0;
 }
-.grp-row textarea{
-  width: 278px !important;
+
+.module td p{
+  padding:0;
+}
+.module td .help{
+  margin-top:1em;
 }
 .preview > p{
   font-weight: bold;
-  margin-bottom: 0.5em;
 }
 
 .grp-messagelist li{
@@ -108,8 +107,9 @@ form.trigger span{
 
 .progress{
   height: 20px;
+  min-width:150px;
   position: relative;
-  background: #555;
+
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -134,7 +134,7 @@ form.trigger span{
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
   background-color: #309bbf;
-  
+
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4fb2d3), color-stop(100%, #309bbf));
   background-image: -webkit-linear-gradient(#4fb2d3,#309bbf);
   background-image: -moz-linear-gradient(#4fb2d3,#309bbf);
@@ -176,7 +176,7 @@ form.trigger span{
   -moz-border-radius-bottomleft: 3px;
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
-  overflow: hidden;  
+  overflow: hidden;
 }
 .progress.done .indicator:after,
 .progress.error .indicator:after{
@@ -219,7 +219,7 @@ form.trigger span{
   padding: 1em;
   margin:2em 0;
   background: #f1f1f1;
-  
+
   box-sizing: border-box;
   overflow: auto;
   zoom: 1;

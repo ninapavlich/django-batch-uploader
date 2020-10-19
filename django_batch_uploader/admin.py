@@ -147,10 +147,10 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
                     else:
                         result_repr = linebreaksbr(result_repr)
             else:
-                if isinstance(f.rel, ManyToManyRel) and value is not None:
-                    result_repr = ", ".join(map(six.text_type, value.all()))
-                else:
-                    result_repr = display_for_field(value, f, "")
+                # if isinstance(f.rel, ManyToManyRel) and value is not None:
+                #     result_repr = ", ".join(map(six.text_type, value.all()))
+                # else:
+                result_repr = display_for_field(value, f, "")
 
         return conditional_escape(result_repr)
 
