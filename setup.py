@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'django_batch_uploader',
-    version = '0.15',
+    version = '1.0',
     author = 'Nina Pavlich',
     author_email='nina@ninalp.com',
     url = 'https://github.com/ninapavlich/django-batch-uploader',
@@ -13,7 +13,7 @@ setup(
 
     include_package_data = True,
     packages = ['django_batch_uploader'],
-    
+
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
