@@ -1130,9 +1130,9 @@ UploadableItem.prototype.start_upload = function(form_url, form_method, filename
         processData: false,
         success: function(data, textStatus, xhr) {
             parent.completed_xhr = parent.active_xhr;
-            console.log(xhr.status);
 
-            success = xhr.status === 200;
+            // We expect a JSON payload to come back with a success boolean
+            success = String(data['success']).toLowerCase()=='true';
 
             if(success){
                 try{

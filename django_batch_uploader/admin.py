@@ -64,7 +64,7 @@ class BaseBatchUploadAdmin(admin.ModelAdmin):
 
                 default_response = super(BaseBatchUploadAdmin, self).add_view(request, form_url, extra_context)
                 response = self.batch_upload_response(request)
-                if not response:
+                if response:
                     return response
                 else:
                     return default_response
